@@ -1,0 +1,45 @@
+{
+ "yesil": [
+  "AE",
+  "AU",
+  "CA",
+  "DE",
+  "ES",
+  "FR",
+  "IT",
+  "NL",
+  "SE",
+  "US"
+ ],
+ "sari": [
+  "AT",
+  "CH",
+  "DK",
+  "IS",
+  "JP",
+  "KR",
+  "MX",
+  "NO",
+  "NZ",
+  "PE",
+  "PT",
+  "TH",
+  "VN"
+ ],
+ "turuncu": [
+  "CN",
+  "GB",
+  "SA"
+ ],
+ "kirmizi": [
+  "AR",
+  "BR",
+  "EG",
+  "ID",
+  "IN",
+  "KE",
+  "MA",
+  "TR"
+ ],
+ "guncellendi": "2026-11-13T19:58"
+}
