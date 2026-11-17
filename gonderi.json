@@ -3,26 +3,26 @@
   "AE",
   "AU",
   "CA",
-  "DE",
-  "ES",
-  "FR",
-  "IT",
-  "NL",
-  "SE",
   "US"
  ],
  "sari": [
   "AT",
   "CH",
+  "DE",
   "DK",
+  "ES",
+  "FR",
   "IS",
+  "IT",
   "JP",
   "KR",
   "MX",
+  "NL",
   "NO",
   "NZ",
   "PE",
   "PT",
+  "SE",
   "TH",
   "VN"
  ],
@@ -41,5 +41,5 @@
   "MA",
   "TR"
  ],
- "guncellendi": "2026-11-13T19:58"
+ "guncellendi": "2026-11-17T16:24"
 }
