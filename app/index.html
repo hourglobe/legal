@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Hourglobe</title>
+<!--
+  Akıllı bağlantı (Mag 2026-11-27): Android → Google Play · iPhone/iPad → site (Apple onayından sonra App Store) · bilgisayar → site.
+  Gelen utm_* değerleri korunur: Play'e "referrer" içinde, siteye aynen, App Store'a "ct" kampanya koduyla.
+  Yalnız AYAR satırları değişir. Yerel dosya olarak (file://) ya da ?dene=1 ile açılınca yönlendirmez, nereye gideceğini gösterir.
+  Yayın: python scripts/hukuk_sitesi_yayinla.py app/index.html --karar "<Mag'in sözü>" (yalnız Mag'in "yayınla"sıyla).
+-->
+<style>
+  body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+         background: #F6F1E7; color: #1F2430; font: 16px/1.5 "Segoe UI", system-ui, -apple-system, sans-serif; text-align: center; }
+  main { padding: 32px 20px; max-width: 460px; width: 100%; box-sizing: border-box; }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 600; font-size: 30px; margin: 0 0 8px; }
+  p { color: #6B6458; margin: 0 0 24px; }
+  a.b { display: block; margin: 12px 0; padding: 14px 18px; border-radius: 10px; background: #C59853;
+        color: #1F2430; text-decoration: none; font-weight: 600; }
+  a.b.ikinci { background: transparent; border: 1.5px solid #C59853; color: #7E6033; }
+  #dene { text-align: left; margin-top: 28px; font-size: 13px; }
+  #dene table { border-collapse: collapse; width: 100%; background: #FFFDF8; }
+  #dene td, #dene th { border: 1px solid #E4DCCB; padding: 6px 8px; vertical-align: top; }
+  #dene td:first-child { white-space: nowrap; }
+  #dene td + td, #dene p { word-break: break-all; }
+  #dene th { text-align: left; background: #EFE8D9; }
+  #dene .bu { background: #F3E6CC; font-weight: 600; }
+</style>
+<script>
+(function () {
+  /* AYAR — yalnız bu üç satır değişir */
+  var PLAY_YAYINDA = false;  // Google Play sayfası açık değilse false: Android de siteye gider (27 Kasım: Play 404)
+  var APP_STORE = "";        // Apple onayından sonra: "https://apps.apple.com/app/id<UYGULAMA_NO>"
+  var APP_STORE_PT = "";     // App Store Connect sağlayıcı kodu (pt); boşsa yazılmaz
+  /* ---------------------------------------- */
+  var PLAY = "https://play.google.com/store/apps/details?id=com.shophourglobe.app";
+  var SITE = "https://shophourglobe.com/";
+  var q = new URLSearchParams(location.search);
+  function temiz(v, n) { return (v || "").replace(/[^A-Za-z0-9_.\-]/g, "").slice(0, n); }
+  var utm = [];
+  ["utm_source", "utm_medium", "utm_campaign", "utm_content"].forEach(function (k) {
+    var v = temiz(q.get(k), 60);
+    if (v) utm.push(k + "=" + v);
+  });
+  var qs = utm.join("&");
+  var play = PLAY + (qs ? "&referrer=" + encodeURIComponent(qs) : "");
+  var site = SITE + (qs ? "?" + qs : "");
+  var ct = [temiz(q.get("utm_source"), 20), temiz(q.get("utm_campaign"), 20)].filter(Boolean).join("_").slice(0, 40);
+  var magaza = APP_STORE ? APP_STORE + "?" + (APP_STORE_PT ? "pt=" + encodeURIComponent(APP_STORE_PT) + "&" : "")
+    + (ct ? "ct=" + encodeURIComponent(ct) + "&" : "") + "mt=8" : "";
+  var ua = navigator.userAgent || "";
+  var cihaz = /Android/i.test(ua) ? "android"
+    : (/iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) ? "ios"
+    : "bilgisayar";
+  function hedef(c) {
+    if (c === "android" && PLAY_YAYINDA) return play;
+    if (c === "ios" && magaza) return magaza;
+    return site;
+  }
+  var dene = location.protocol === "file:" || q.get("dene") === "1";
+  window.HG = { cihaz: cihaz, hedef: hedef, dene: dene, site: site, play: play, playAcik: PLAY_YAYINDA, magaza: magaza, utm: qs };
+  if (!dene) location.replace(hedef(cihaz));
+})();
+</script>
+</head>
+<body>
+<main>
+  <h1>Hourglobe</h1>
+  <p id="m">Taking you to Hourglobe…</p>
+  <a class="b" id="site" href="https://shophourglobe.com/">Shop on the website</a>
+  <a class="b ikinci" id="play" href="https://play.google.com/store/apps/details?id=com.shophourglobe.app">Get the app on Google Play</a>
+  <div id="dene"></div>
+</main>
+<script>
+(function () {
+  var H = window.HG;
+  if (!H) return;
+  document.getElementById("site").href = H.site;
+  var p = document.getElementById("play");
+  if (H.playAcik && H.cihaz !== "ios") p.href = H.play; else p.style.display = "none";
+  if (!H.dene) return;
+  document.getElementById("m").textContent = "Deneme görünümü: yönlendirme yapılmadı. Bu bağlantıyı açan her cihaz şuraya gider:";
+  var ad = { android: "Android telefon", ios: "iPhone / iPad", bilgisayar: "Bilgisayar" };
+  var satir = ["android", "ios", "bilgisayar"].map(function (c) {
+    var h = H.hedef(c);
+    return "<tr" + (c === H.cihaz ? " class=\"bu\"" : "") + "><td>" + ad[c] + (c === H.cihaz ? " (bu cihaz)" : "")
+      + "</td><td>" + h.replace(/&/g, "&amp;").replace(/</g, "&lt;") + "</td></tr>";
+  }).join("");
+  document.getElementById("dene").innerHTML = "<table><tr><th>Cihaz</th><th>Gideceği adres</th></tr>" + satir + "</table>"
+    + "<p style=\"margin-top:12px\">Google Play: " + (H.playAcik ? "açık" : "kapalı (Android de siteye)")
+    + " · App Store: " + (H.magaza ? "açık" : "henüz yok (iPhone siteye)") + " · Okunan UTM: " + (H.utm || "yok") + "</p>";
+})();
+</script>
+<noscript><p><a href="https://shophourglobe.com/">shophourglobe.com</a></p></noscript>
+</body>
+</html>
